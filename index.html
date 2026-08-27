@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>逐光行动 · 点亮星河 — 案例孵化大赛评分系统</title>
+<style>
+  :root{
+    --bg:#05091a; --panel:rgba(18,42,94,.42); --panel-2:rgba(18,42,94,.62);
+    --line:rgba(147,168,214,.2); --line-gold:rgba(232,180,85,.35);
+    --gold:#E8B455; --gold-l:#F7DFA5; --gold-xl:#FFF3D2; --gold-d:#C08A2E;
+    --ink:#EAF0FF; --ink-2:#B9C6E6; --ink-3:#8FA0C8; --ink-4:#5E71A0;
+    --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--gold);text-decoration:none} a:hover{color:var(--gold-l)}
+  button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink);background:rgba(5,9,26,.55);
+    border:1px solid var(--line-gold);border-radius:4px;padding:0 12px;height:48px;width:100%;outline:none;appearance:none}
+  input:focus,select:focus{border-color:var(--gold)}
+  select{background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+    background-position:calc(100% - 18px) 21px,calc(100% - 13px) 21px;background-size:5px 5px;background-repeat:no-repeat}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .btn{display:flex;align-items:center;justify-content:center;height:52px;border-radius:4px;
+    background:linear-gradient(135deg,#F7DFA5,#E8B455 60%,#D69F3C);color:#0a1233;font-size:17px;font-weight:700}
+  .btn:active{filter:brightness(.92)}
+  .btn[disabled]{background:rgba(147,168,214,.18);color:var(--ink-4);box-shadow:none}
+  .btn-ghost{display:flex;align-items:center;justify-content:center;height:48px;border-radius:4px;
+    border:1px solid var(--line-gold);color:var(--gold);font-size:16px;background:none}
+  .btn-sm{height:36px;padding:0 14px;border-radius:3px;border:1px solid var(--line);color:var(--ink-2);font-size:13px;display:inline-flex;align-items:center}
+  .btn-sm.gold{border:none;background:linear-gradient(135deg,#F7DFA5,#E8B455);color:#0a1233;font-weight:700}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 18% 12%,#fff 50%,transparent 51%),
+      radial-gradient(1.2px 1.2px at 72% 8%,#F7DFA5 50%,transparent 51%),
+      radial-gradient(1px 1px at 42% 22%,#fff 50%,transparent 51%),
+      radial-gradient(1.6px 1.6px at 86% 30%,#fff 50%,transparent 51%),
+      radial-gradient(1px 1px at 28% 44%,#F7DFA5 50%,transparent 51%),
+      radial-gradient(1.2px 1.2px at 60% 58%,#fff 50%,transparent 51%),
+      radial-gradient(1px 1px at 12% 72%,#fff 50%,transparent 51%),
+      radial-gradient(1.3px 1.3px at 80% 84%,#fff 50%,transparent 51%);
+    opacity:.7}
+  #root{position:relative;z-index:1;min-height:100vh}
+  .shimmer{background:linear-gradient(100deg,#C08A2E,#E8B455 22%,#FFF8E2 38%,#E8B455 54%,#C08A2E 76%,#E8B455);
+    background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shim 4.5s linear infinite}
+  @keyframes shim{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+  @keyframes twk{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1.15)}}
+  @keyframes glow{0%,100%{filter:drop-shadow(0 0 6px rgba(232,180,85,.3))}50%{filter:drop-shadow(0 0 18px rgba(247,223,165,.7))}}
+  @keyframes fall{0%{transform:translate3d(0,-40px,0) rotate(0);opacity:0}8%{opacity:1}
+    100%{transform:translate3d(var(--dx,20px),110vh,0) rotate(var(--rot,540deg));opacity:.9}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 rgba(232,180,85,0)}50%{box-shadow:0 0 26px rgba(247,223,165,.35)}}
+  .twk{animation:twk 2.4s ease-in-out infinite}
+  .glow{animation:glow 3.6s ease-in-out infinite}
+  /* 评分按钮网格 */
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:12px}
+  .gbtn{height:46px;border:1px solid rgba(147,168,214,.3);border-radius:4px;display:flex;align-items:center;
+    justify-content:center;font-family:var(--mono);font-size:16px;color:var(--ink-2)}
+  .gbtn.on{border:none;color:#0a1233;background:linear-gradient(135deg,#F7DFA5,#E8B455);
+    font-weight:600;box-shadow:0 0 14px rgba(232,180,85,.35)}
+  /* 表格 */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{padding:9px 10px;color:var(--ink-3);font-weight:500;text-align:left;background:var(--panel-2);
+    border-bottom:1px solid var(--line-gold);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid rgba(147,168,214,.12)}
+  .r{text-align:right} .c{text-align:center}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:2px;border:1px solid var(--line);color:var(--ink-3)}
+  .pill.gold{background:var(--gold-l);color:#0a1233;border:none;font-weight:700}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:99;max-width:88%;
+    background:#0d1a3f;border:1px solid var(--line-gold);color:var(--ink);padding:12px 18px;border-radius:4px;
+    font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .modal{position:fixed;inset:0;background:rgba(3,6,16,.72);z-index:98;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-box{background:#0a1435;border:1px solid var(--line-gold);border-radius:6px;max-width:520px;width:100%;
+    max-height:86vh;overflow:auto;padding:22px}
+  .adm{max-width:1440px;margin:0 auto;padding:0 24px 60px}
+  .hd{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;
+    border-bottom:1px solid var(--line-gold);background:linear-gradient(90deg,#12275c,#0a1435)}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+  .muted{color:var(--ink-3)} .dim{color:var(--ink-4)} .gd{color:var(--gold-l)}
+  .fs{position:fixed;inset:0;z-index:100;background:radial-gradient(120% 70% at 50% 0%,#1c3f86,#0c1a40 45%,#05091a);overflow:auto}
+  @media print{.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div id="root"></div>
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="ui.js"></script>
+<script src="judge.js"></script>
+<script src="admin.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
