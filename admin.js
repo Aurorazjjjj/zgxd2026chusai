@@ -467,18 +467,15 @@
         }))
       ]);
       function save() {
-        var payload = {}, seen = {}, bad = null;
+        var payload = {};
         Object.keys(inputs).forEach(function (k) {
-          var v = inputs[k].value === "" ? null : parseInt(inputs[k].value, 10);
-          payload[k] = v;
-          if (v !== null) { if (seen[v]) bad = "大众排名 " + v + " 重复"; seen[v] = 1; }
+          payload[k] = inputs[k].value === "" ? null : parseInt(inputs[k].value, 10);
         });
-        if (bad) return UI.toast(bad);
         API.setPublicRanks(need(), active, payload).then(function () {
           UI.toast("已保存，排名已自动重算"); publicRankPage(active);
         }).catch(err);
       }
-      mount(shell("大众评审排名管理", "组内排名，A/B 为 1–10，C/D 为 1–11；同组不得重复。正式结果出来后直接替换即可，无需重新部署",
+      mount(shell("大众评审排名管理", "组内排名，范围 A/B 1–10、C/D 1–11；允许并列（如 1、1、3），后面名次顺延。正式结果出来后直接替换即可，无需重新部署",
         [el("button.btn-sm.gold", { onclick: save }, "保存")], [
         navTabs("大众评审排名"),
         el("div", { style: "display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" }, GROUPS.map(function (g) {
