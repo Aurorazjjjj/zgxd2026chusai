@@ -21,11 +21,12 @@
     });
     return e;
   }
-  function mount(node) {
+  function mount(node, keepScroll) {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
     var r = document.getElementById("root");
     r.innerHTML = "";
     r.appendChild(node);
-    window.scrollTo(0, 0);
+    if (keepScroll) window.scrollTo(0, y); else window.scrollTo(0, 0);
   }
   function toast(msg, ms) {
     var t = el("div.toast", {}, msg);

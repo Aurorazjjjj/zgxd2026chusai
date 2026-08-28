@@ -14,7 +14,7 @@
         S.group.current_case_id = p.current_case_id;
         S.group.status = p.status;
         S.group.locked = p.locked;
-        if (changed && S.view === "home") render();
+        if (changed && S.view === "home") render(true);
       }).catch(function () {});
     }, APP_CONFIG.PULSE_MS || 4000);
   }
@@ -179,7 +179,7 @@
         btns.push(el("button" + (val === n ? ".gbtn.on" : ".gbtn"), {
           onclick: function () {
             S.draft[d.id] = (S.draft[d.id] === n && !d.required) ? null : n;
-            autosave(); render();
+            autosave(); render(true);
           }
         }, String(n)));
       })(i);
@@ -234,7 +234,7 @@
             el("span.mono", { style: "font-size:13px;color:#F7DFA5" }, partSum(cat) + "/" + max)]);
         })),
       el("div", { style: "padding:2px 16px 0" }, body),
-      el("div", { style: "position:fixed;left:0;right:0;bottom:0;background:#0a1436;border-top:1px solid rgba(232,180,85,.3);padding:12px 16px calc(18px + env(safe-area-inset-bottom))" }, [
+      el("div", { style: "position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(8,14,38,.92),#0a1436 40%);border-top:1px solid rgba(232,180,85,.3);padding:12px 18px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -8px 26px rgba(3,6,16,.6)" }, [
         el("div", { style: "display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px" }, [
           el("div", { style: "font-size:13px;color:#B9C6E6" }, "当前总分"),
           el("div.mono", { style: "font-size:26px;color:#F7DFA5;line-height:1" },
@@ -285,11 +285,11 @@
     ]);
   }
 
-  function render() {
+  function render(keepScroll) {
     if (S.view === "login") mount(viewLogin());
-    else if (S.view === "score") mount(viewScore());
+    else if (S.view === "score") mount(viewScore(), keepScroll);
     else if (S.view === "done") mount(viewDone());
-    else mount(viewHome());
+    else mount(viewHome(), keepScroll);
   }
 
   window.JudgeApp = { start: start };

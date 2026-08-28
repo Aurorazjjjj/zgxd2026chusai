@@ -36,10 +36,10 @@
 
   // ---------------- 登录 ----------------
   function login() {
-    var box = el("div.card", { style: "max-width:380px;margin:0 auto;padding:24px" }, [
-      el("div", { style: "font-size:12px;color:#8FA0C8;margin-bottom:8px" }, "管理密码"),
-      el("input", { id: "code", type: "password", placeholder: "请输入管理密码" }),
-      el("button.btn", { style: "margin-top:18px", onclick: function () {
+    var box = el("div.card", { style: "max-width:380px;margin:0 auto;padding:26px 24px;background:rgba(18,42,94,.55);border-color:rgba(232,180,85,.24)" }, [
+      el("div", { style: "font-size:12px;color:#8FA0C8;margin-bottom:8px;letter-spacing:.06em" }, "管理密码"),
+      el("input", { id: "code", type: "password", placeholder: "请输入管理密码", style: "height:50px;border-radius:25px;padding:0 18px;text-align:center;letter-spacing:.14em" }),
+      el("button.btn", { style: "margin-top:20px", onclick: function () {
         var v = document.getElementById("code").value;
         API.adminLogin(v).then(function () { CODE = v; store.set("admin_code", v); route(); })
           .catch(function (e) { UI.toast("登录失败：" + e.message, 6000); });
