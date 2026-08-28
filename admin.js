@@ -27,7 +27,7 @@
   function navTabs(active) {
     var items = [["总览", "#/admin"], ["案例管理", "#/admin/cases"], ["评委管理", "#/admin/judges"],
                  ["大众评审排名", "#/admin/public-ranking"], ["评委入口二维码", "#/admin/qr"],
-                 ["操作日志", "#/admin/audit"], ["导出", "#/admin/export"]];
+                 ["操作日志", "#/admin/audit"], ["导出", "#/admin/export"], ["测试数据清理", "#/admin/reset"]];
     return el("div.tabs", {}, items.map(function (it) {
       var on = it[0] === active;
       return el("button." + (on ? "btn-sm gold" : "btn-sm"), { onclick: function () { go(it[1]); } }, it[0]);
@@ -581,6 +581,46 @@
     }).catch(err);
   }
 
+  // ---------------- 测试数据清理 ----------------
+  function resetPage() {
+    function clear(scope, label) {
+      var inp = el("input", { placeholder: "请输入 清除 两个字以确认", style: "height:42px;margin-top:12px" });
+      UI.modal("清除" + label, el("div", {}, [
+        el("div", { style: "font-size:14px;color:#B9C6E6;line-height:1.7" },
+          "将删除" + label + "的全部评分记录（含草稿），并把相关组重置为「未开始」、清空当前案例。案例、评委名单、大众排名不受影响。"),
+        el("div", { style: "font-size:13px;color:#E8B455;margin-top:10px" }, "此操作不可恢复。"),
+        inp
+      ]), [
+        { label: "取消" },
+        { label: "确认清除", primary: true, onClick: function (close) {
+            if (inp.value.trim() !== "清除") return UI.toast("请输入「清除」两个字确认");
+            close();
+            API.clearScores(need(), scope).then(function (r) {
+              UI.toast("已清除 " + r.deleted + " 条评分记录", 3600);
+            }).catch(err);
+          } }
+      ]);
+    }
+    mount(shell("测试数据清理", "正式开赛前用它清掉测试评分", [], [
+      navTabs("测试数据清理"),
+      el("div.card", { style: "padding:22px;max-width:680px" }, [
+        el("div", { style: "font-size:15px;font-weight:700;color:#F7DFA5;margin-bottom:6px" }, "按组清除"),
+        el("div", { style: "font-size:12.5px;color:#8FA0C8;margin-bottom:14px" },
+          "删除该组全部评分（含草稿），并重置该组状态与当前案例"),
+        el("div", { style: "display:flex;gap:10px;flex-wrap:wrap" }, GROUPS.map(function (g) {
+          return el("button.btn-sm", { onclick: function () { clear(g, g + " 组"); } }, "清除 " + g + " 组评分");
+        })),
+        el("div", { style: "height:1px;background:rgba(232,180,85,.2);margin:22px 0" }),
+        el("div", { style: "font-size:15px;font-weight:700;color:#F7DFA5;margin-bottom:6px" }, "全部清除"),
+        el("div", { style: "font-size:12.5px;color:#8FA0C8;margin-bottom:14px" },
+          "删除四个组的所有评分记录，四组全部重置为「未开始」—— 正式开赛前执行一次即可"),
+        el("button.btn-sm.gold", { onclick: function () { clear("ALL", "全部四个组"); } }, "清除全部评分"),
+        el("div", { style: "font-size:11.5px;color:#7286B4;margin-top:20px;line-height:1.7" },
+          "清除不会动：42 个案例、评委名单、大众排名、评分项设置。每次清除都会记入操作日志。")
+      ])
+    ]));
+  }
+
   // ---------------- 最终排名大屏 ----------------
   function resultsPage(code) {
     loading();
@@ -673,6 +713,7 @@
     if (/^admin\/qr/.test(h)) return qrPage();
     if (/^admin\/audit/.test(h)) return auditPage();
     if (/^admin\/export/.test(h)) return exportPage();
+    if (/^admin\/reset/.test(h)) return resetPage();
     return overview();
   }
 

@@ -60,6 +60,7 @@
     unlock: function (c, g) { return rpc("admin_unlock", { p_code: c, p_group_code: g }); },
     results: function (c, g) { return rpc("admin_results", { p_code: c, p_group_code: g }); },
     audit: function (c) { return rpc("admin_audit", { p_code: c, p_limit: 300 }); },
-    exportAll: function (c) { return rpc("admin_export", { p_code: c }); }
+    exportAll: function (c) { return rpc("admin_export", { p_code: c }); },
+    clearScores: function (c, g) { return rpc("admin_clear_scores", { p_code: c, p_group_code: g || null }); }
   };
 })();
